@@ -15,13 +15,18 @@ collection = db["newsque_resource"]
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/v1/articles')
+# newsfeed endpoint for news articles homepage
+# Upcoming endpoints:
+# /v1/updates
+# /v1/headlines
+# /v1/bulletins
+# /v1/stories
+@app.route('/v1/newsfeed')
 def get_articles():
     try:
         offset = int(request.args.get('offset', 0))
         limit = int(request.args.get('limit', 3))
-        resources = list(collection.find({}, {"_id": 0})[offset:offset+limit])
+        resources = list(collection.find({}, {"_id": 0}).sort("created_date", -1)[offset:offset+limit])
         return jsonify(resources)
     except Exception as e:
         print(f"Error: {e}")
@@ -29,4 +34,3 @@ def get_articles():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
