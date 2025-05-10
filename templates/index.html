@@ -1,0 +1,59 @@
+<!-- HTML + JS Frontend (templates/index.html) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News Feed</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .article { border-bottom: 1px solid #ddd; padding: 20px 0; }
+    .article img { width: 100%; max-width: 600px; display: block; margin-top: 10px; }
+    .loading { text-align: center; font-style: italic; color: gray; }
+  </style>
+</head>
+<body>
+  <h1>Latest News</h1>
+  <div id="articles"></div>
+  <div class="loading" id="loading">Loading...</div>
+
+  <script>
+    let offset = 0;
+    const articlesContainer = document.getElementById('articles');
+    const loading = document.getElementById('loading');
+
+    async function loadArticles() {
+      loading.style.display = 'block';
+      const response = await fetch(`/v1/articles?offset=${offset}&limit=3`);
+      const data = await response.json();
+
+      data.forEach(article => {
+        const div = document.createElement('div');
+        div.className = 'article';
+        div.innerHTML = `
+          <h2>${article.abstract}</h2>
+          <p><strong>${article.byline}</strong></p>
+          <p>${new Date(article.created_date).toLocaleString()}</p>
+          ${article.multimedia?.[0]?.url ? `<img src="${article.multimedia[0].url}" alt="">` : ''}
+        `;
+        articlesContainer.appendChild(div);
+      });
+
+      if (data.length === 0) loading.innerText = "No more articles.";
+      else loading.style.display = 'none';
+      offset += 3;
+    }
+
+    // Infinite scroll logic
+    window.addEventListener('scroll', () => {
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+      if (nearBottom && loading.style.display === 'none') {
+        loadArticles();
+      }
+    });
+
+    // Initial load
+    loadArticles();
+  </script>
+</body>
+</html>

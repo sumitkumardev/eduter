@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, render_template, jsonify, request  # Added render_template
 from pymongo import MongoClient
 import os
 
@@ -12,14 +12,21 @@ client = MongoClient(MONGO_URI)
 db = client["newsque"]
 collection = db["newsque_resource"]
 
-@app.route("/api/resources")
-def get_resources():
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/v1/articles')
+def get_articles():
     try:
-        resources = list(collection.find({}, {"_id": 0}))
+        offset = int(request.args.get('offset', 0))
+        limit = int(request.args.get('limit', 3))
+        resources = list(collection.find({}, {"_id": 0})[offset:offset+limit])
         return jsonify(resources)
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
-if __name__ == "__main__":
-    app.run()
+if __name__ == '__main__':
+    app.run(debug=True)
+
