@@ -14,8 +14,12 @@ collection = db["newsque_resource"]
 
 @app.route("/api/resources")
 def get_resources():
-    resources = list(collection.find({}, {"_id": 0}))  # Don't return _id
-    return jsonify(resources)
+    try:
+        resources = list(collection.find({}, {"_id": 0}))
+        return jsonify(resources)
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
 
 if __name__ == "__main__":
     app.run()
