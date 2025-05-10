@@ -24,7 +24,7 @@
 
     async function loadArticles() {
       loading.style.display = 'block';
-      const response = await fetch(`/v1/articles?offset=${offset}&limit=3`);
+      const response = await fetch(`/v1/newsfeed?offset=${offset}&limit=3`);
       const data = await response.json();
 
       data.forEach(article => {
