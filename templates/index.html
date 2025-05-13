@@ -5,12 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>News Feed</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    .article { border-bottom: 1px solid #ddd; padding: 20px 0; }
-    .article img { width: 100%; max-width: 600px; display: block; margin-top: 10px; }
-    .loading { text-align: center; font-style: italic; color: gray; }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
   <h1>Latest News</h1>
@@ -28,15 +23,17 @@
       const data = await response.json();
 
       data.forEach(article => {
-        const div = document.createElement('div');
-        div.className = 'article';
-        div.innerHTML = `
-          <h2>${article.abstract}</h2>
+        const divArt = document.createElement('div');
+        divArt.className = 'article';
+        divArt.innerHTML = `
+        ${article.multimedia?.[0]?.url ? `<div class="thumb"><img src="${article.multimedia[0].url}" alt="${article.title}"></div>` : ''}
+         <div class="contents"><h2><a href="${article.url}">${article.title}</a></h2>
+          <p class="article-summary">${article.abstract}</p>
           <p><strong>${article.byline}</strong></p>
-          <p>${new Date(article.created_date).toLocaleString()}</p>
-          ${article.multimedia?.[0]?.url ? `<img src="${article.multimedia[0].url}" alt="">` : ''}
+          <p>${new Date(article.created_date).toLocaleString()}</p></div>
         `;
-        articlesContainer.appendChild(div);
+        articlesContainer.appendChild(divArt);
+
       });
 
       if (data.length === 0) loading.innerText = "No more articles.";
