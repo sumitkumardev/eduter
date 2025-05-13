@@ -1,18 +1,19 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     padding: 20px;
 }
-
+h2{
+    font-family: "Times New Roman", Times, serif;
+}
 .article {
     border-bottom: 1px solid #ddd;
-    padding: 20px 0;
 }
 
 .article img {
     width: 100%;
     max-width: 600px;
     display: block;
-    margin-top: 10px;
+    border-radius: 1rem 1rem 0 0;
 }
 
 .loading {
@@ -21,7 +22,7 @@ body {
     color: gray;
 }
 .article {
-    background: #f5f5f5;
+    background: #df7272;
     border-radius: 1rem;
 }
 
@@ -42,4 +43,9 @@ div#articles {
 
 strong {
     font-style: italic;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
 }
