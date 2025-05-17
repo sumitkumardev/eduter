@@ -53,83 +53,97 @@
     loadArticles();
   </script> -->
   <!-- V2 NEW ~ 18/05/2025 -->
-  <script src="https://unpkg.com/colorthief/dist/color-thief.umd.js"></script>
- <script>
-  let offset = 0;
-  const articlesContainer = document.getElementById('articles');
-  const loading = document.getElementById('loading');
-  const colorThief = new ColorThief();
+<script src="https://unpkg.com/colorthief/dist/color-thief.umd.js"></script>
 
-  // Adjust RGB color for contrast (lighten or darken slightly)
-  function adjustForContrast([r, g, b]) {
-    // Simple method: increase brightness by 20%
-    const factor = 1.2;
-    return [
-      Math.min(255, Math.round(r * factor)),
-      Math.min(255, Math.round(g * factor)),
-      Math.min(255, Math.round(b * factor))
-    ];
-  }
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const colorThief = new ColorThief();
+    let offset = 0;
+    const articlesContainer = document.getElementById('articles');
+    const loading = document.getElementById('loading');
 
-  async function loadArticles() {
-    loading.style.display = 'block';
-    const response = await fetch(`/v1/newsfeed?offset=${offset}&limit=3`);
-    const data = await response.json();
+    // Utility: Check luminance to decide white or black text
+    function getContrastTextColor([r, g, b]) {
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+      return luminance > 186 ? 'black' : 'white'; // Rule of thumb
+    }
 
-    data.forEach(article => {
-      const divArt = document.createElement('div');
-      divArt.className = 'article';
+    // Slight contrast boost for background
+    function adjustForPremiumContrast([r, g, b]) {
+      const boost = 0.9; // darken a bit for luxury feel
+      return [
+        Math.max(0, Math.round(r * boost)),
+        Math.max(0, Math.round(g * boost)),
+        Math.max(0, Math.round(b * boost))
+      ];
+    }
 
-      // Create thumbnail image
-      let imgHTML = '';
-      if (article.multimedia?.[0]?.url) {
-        imgHTML = `<div class="thumb"><img crossorigin="anonymous" src="${article.multimedia[0].url}" alt="${article.title}"></div>`;
-      }
+    async function loadArticles() {
+      loading.style.display = 'block';
+      const response = await fetch(`/v1/newsfeed?offset=${offset}&limit=3`);
+      const data = await response.json();
 
-      divArt.innerHTML = `
-        ${imgHTML}
-        <div class="contents">
-          <h2><a href="${article.url}">${article.title}</a></h2>
-          <p class="article-summary">${article.abstract}</p>
-          <p><strong>${article.byline}</strong></p>
-          <p>${new Date(article.created_date).toLocaleString()}</p>
-        </div>
-      `;
+      data.forEach(article => {
+        const divArt = document.createElement('div');
+        divArt.className = 'article';
 
-      articlesContainer.appendChild(divArt);
+        let imgHTML = '';
+        if (article.multimedia?.[0]?.url) {
+          imgHTML = `<div class="thumb"><img crossorigin="anonymous" src="${article.multimedia[0].url}" alt="${article.title}"></div>`;
+        }
 
-      // If image exists, wait for it to load and extract color
-      const img = divArt.querySelector('img');
-      if (img) {
-        img.addEventListener('load', () => {
-          try {
-            const color = colorThief.getColor(img); // [r, g, b]
-            const adjusted = adjustForContrast(color);
-            divArt.style.backgroundColor = `rgb(${adjusted.join(',')})`;
-          } catch (e) {
-            console.error("Color extraction failed", e);
-          }
-        });
+        divArt.innerHTML = `
+          ${imgHTML}
+          <div class="contents">
+            <h2><a href="${article.url}">${article.title}</a></h2>
+            <p class="article-summary">${article.abstract}</p>
+            <p><strong>${article.byline}</strong></p>
+            <p>${new Date(article.created_date).toLocaleString()}</p>
+          </div>
+        `;
+
+        articlesContainer.appendChild(divArt);
+
+        const img = divArt.querySelector('img');
+        if (img) {
+          img.addEventListener('load', () => {
+            try {
+              const palette = colorThief.getPalette(img, 5); // Get top 5 colors
+              const majorityColor = palette[0]; // Most dominant one
+              const adjustedColor = adjustForPremiumContrast(majorityColor);
+              const textColor = getContrastTextColor(adjustedColor);
+
+              divArt.style.backgroundColor = `rgb(${adjustedColor.join(',')})`;
+              divArt.style.color = textColor;
+
+              // Apply text color inside contents
+              divArt.querySelectorAll('.contents, a, p, h2, strong').forEach(el => {
+                el.style.color = textColor;
+              });
+            } catch (e) {
+              console.warn("Color extraction failed:", e);
+            }
+          });
+        }
+      });
+
+      if (data.length === 0) loading.innerText = "No more articles.";
+      else loading.style.display = 'none';
+      offset += 3;
+    }
+
+    // Infinite scroll
+    window.addEventListener('scroll', () => {
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+      if (nearBottom && loading.style.display === 'none') {
+        loadArticles();
       }
     });
 
-    if (data.length === 0) loading.innerText = "No more articles.";
-    else loading.style.display = 'none';
-
-    offset += 3;
-  }
-
-  // Infinite scroll logic
-  window.addEventListener('scroll', () => {
-    const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
-    if (nearBottom && loading.style.display === 'none') {
-      loadArticles();
-    }
+    loadArticles();
   });
-
-  // Initial load
-  loadArticles();
 </script>
+
 
   <footer>
 <p>News data powered by The New York Times, The Guardian and NewsAPI. All content belongs to their respective publishers</p>
