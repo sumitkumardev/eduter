@@ -68,9 +68,9 @@
       return luminance > 186 ? 'black' : 'white'; // Rule of thumb
     }
 
-    // Slight contrast boost for background
+
     function adjustForPremiumContrast([r, g, b]) {
-      const boost = 0.9; // darken a bit for luxury feel
+      const boost = 0.9;
       return [
         Math.max(0, Math.round(r * boost)),
         Math.max(0, Math.round(g * boost)),
