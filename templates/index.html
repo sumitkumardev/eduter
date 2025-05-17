@@ -11,8 +11,8 @@
   <h1>Latest News</h1>
   <div id="articles"></div>
   <div class="loading" id="loading">Loading...</div>
-
-  <script>
+<!-- V1 OLD -->
+  <!-- <script>
     let offset = 0;
     const articlesContainer = document.getElementById('articles');
     const loading = document.getElementById('loading');
@@ -51,10 +51,89 @@
 
     // Initial load
     loadArticles();
-  </script>
+  </script> -->
+<!-- V2 NEW ~ 18/05/2025 -->
+ <script>
+  let offset = 0;
+  const articlesContainer = document.getElementById('articles');
+  const loading = document.getElementById('loading');
+  const colorThief = new ColorThief();
+
+  // Adjust RGB color for contrast (lighten or darken slightly)
+  function adjustForContrast([r, g, b]) {
+    // Simple method: increase brightness by 20%
+    const factor = 1.2;
+    return [
+      Math.min(255, Math.round(r * factor)),
+      Math.min(255, Math.round(g * factor)),
+      Math.min(255, Math.round(b * factor))
+    ];
+  }
+
+  async function loadArticles() {
+    loading.style.display = 'block';
+    const response = await fetch(`/v1/newsfeed?offset=${offset}&limit=3`);
+    const data = await response.json();
+
+    data.forEach(article => {
+      const divArt = document.createElement('div');
+      divArt.className = 'article';
+
+      // Create thumbnail image
+      let imgHTML = '';
+      if (article.multimedia?.[0]?.url) {
+        imgHTML = `<div class="thumb"><img crossorigin="anonymous" src="${article.multimedia[0].url}" alt="${article.title}"></div>`;
+      }
+
+      divArt.innerHTML = `
+        ${imgHTML}
+        <div class="contents">
+          <h2><a href="${article.url}">${article.title}</a></h2>
+          <p class="article-summary">${article.abstract}</p>
+          <p><strong>${article.byline}</strong></p>
+          <p>${new Date(article.created_date).toLocaleString()}</p>
+        </div>
+      `;
+
+      articlesContainer.appendChild(divArt);
+
+      // If image exists, wait for it to load and extract color
+      const img = divArt.querySelector('img');
+      if (img) {
+        img.addEventListener('load', () => {
+          try {
+            const color = colorThief.getColor(img); // [r, g, b]
+            const adjusted = adjustForContrast(color);
+            divArt.style.backgroundColor = `rgb(${adjusted.join(',')})`;
+          } catch (e) {
+            console.error("Color extraction failed", e);
+          }
+        });
+      }
+    });
+
+    if (data.length === 0) loading.innerText = "No more articles.";
+    else loading.style.display = 'none';
+
+    offset += 3;
+  }
+
+  // Infinite scroll logic
+  window.addEventListener('scroll', () => {
+    const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+    if (nearBottom && loading.style.display === 'none') {
+      loadArticles();
+    }
+  });
+
+  // Initial load
+  loadArticles();
+</script>
+
   <footer>
 <p>News data powered by The New York Times, The Guardian and NewsAPI. All content belongs to their respective publishers</p>
     <p>&copy; 2025 news.sumitdev.com</p>
   </footer>
+  <script src="https://unpkg.com/colorthief/dist/color-thief.umd.js"></script>
 </body>
 </html>
