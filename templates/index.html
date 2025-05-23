@@ -1,18 +1,44 @@
 <!-- HTML + JS Frontend (templates/index.html) -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>News Feed</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
-  <h1>Latest News</h1>
-  <div id="articles"></div>
-  <div class="loading" id="loading">Loading...</div>
-<!-- V1 OLD -->
-  <!-- <script>
+  <main>
+    <header>
+      <div class="headMain">
+        <div class="left">
+          <h1>NewsQue</h1>
+        </div>
+        <div class="right">
+          <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+            <path d="M4 18L20 18" stroke="#000000" stroke-width="2" stroke-linecap="round"></path>
+
+            <path d="M4 6L20 6" stroke="#000000" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+        </div>
+      </div>
+
+    </header>
+    <div class="contents">
+      <div class="button-container">
+        <button class="glass-btn">News</button>
+        <button class="glass-btn">Movies</button>
+
+      </div>
+    </div>
+    <div id="articles">
+      <h1>Latest News</h1>
+    </div>
+    <div class="loading" id="loading">Loading...</div>
+    <!-- V1 OLD -->
+    <!-- <script>
     let offset = 0;
     const articlesContainer = document.getElementById('articles');
     const loading = document.getElementById('loading');
@@ -52,102 +78,110 @@
     // Initial load
     loadArticles();
   </script> -->
-  <!-- V2 NEW ~ 18/05/2025 -->
-<script src="https://unpkg.com/colorthief/dist/color-thief.umd.js"></script>
+    <!-- V2 NEW ~ 18/05/2025 -->
+    <script src="https://unpkg.com/colorthief/dist/color-thief.umd.js"></script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const colorThief = new ColorThief();
-    let offset = 0;
-    const articlesContainer = document.getElementById('articles');
-    const loading = document.getElementById('loading');
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const colorThief = new ColorThief();
+        let offset = 0;
+        const articlesContainer = document.getElementById('articles');
+        const loading = document.getElementById('loading');
 
-    // Utility: Check luminance to decide white or black text
-    function getContrastTextColor([r, g, b]) {
-      const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
-      return luminance > 186 ? 'black' : 'white'; // Rule of thumb
-    }
-
-
-    function adjustForPremiumContrast([r, g, b]) {
-      const boost = 0.9;
-      return [
-        Math.max(0, Math.round(r * boost)),
-        Math.max(0, Math.round(g * boost)),
-        Math.max(0, Math.round(b * boost))
-      ];
-    }
-
-    async function loadArticles() {
-      loading.style.display = 'block';
-      const response = await fetch(`/v1/newsfeed?offset=${offset}&limit=3`);
-      const data = await response.json();
-
-      data.forEach(article => {
-        const divArt = document.createElement('div');
-        divArt.className = 'article';
-
-        let imgHTML = '';
-        if (article.multimedia?.[0]?.url) {
-          imgHTML = `<div class="thumb"><img crossorigin="anonymous" src="${article.multimedia[0].url}" alt="${article.title}"></div>`;
+        // Utility: Check luminance to decide white or black text
+        function getContrastTextColor([r, g, b]) {
+          const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+          return luminance > 186 ? 'black' : 'white'; // Rule of thumb
         }
 
-        divArt.innerHTML = `
+
+        function adjustForPremiumContrast([r, g, b]) {
+          const boost = 0.9;
+          return [
+            Math.max(0, Math.round(r * boost)),
+            Math.max(0, Math.round(g * boost)),
+            Math.max(0, Math.round(b * boost))
+          ];
+        }
+
+        async function loadArticles() {
+          loading.style.display = 'block';
+          const response = await fetch(`/v1/newsfeed?offset=${offset}&limit=3`);
+          const data = await response.json();
+
+          data.forEach(article => {
+            const divArt = document.createElement('div');
+            divArt.className = 'article';
+
+            let imgHTML = '';
+            if (article.multimedia?.[0]?.url) {
+              imgHTML = `<div class="thumb"><img crossorigin="anonymous" src="${article.multimedia[0].url}" alt="${article.title}"></div>`;
+            }
+
+            divArt.innerHTML = `
           ${imgHTML}
           <div class="contents">
             <h2><a href="${article.url}">${article.title}</a></h2>
             <p class="article-summary">${article.abstract}</p>
-            <p><strong>${article.byline}</strong></p>
-            <p>${new Date(article.created_date).toLocaleString()}</p>
+          <div class="meta"><p><strong>${article.byline}</strong></p>
+            <p class="sml">${new Date(article.created_date).toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            })}</p></div>
+
           </div>
         `;
 
-        articlesContainer.appendChild(divArt);
+            articlesContainer.appendChild(divArt);
 
-        const img = divArt.querySelector('img');
-        if (img) {
-          img.addEventListener('load', () => {
-            try {
-              const palette = colorThief.getPalette(img, 5); // Get top 5 colors
-              const majorityColor = palette[0]; // Most dominant one
-              const adjustedColor = adjustForPremiumContrast(majorityColor);
-              const textColor = getContrastTextColor(adjustedColor);
+            const img = divArt.querySelector('img');
+            if (img) {
+              img.addEventListener('load', () => {
+                try {
+                  const palette = colorThief.getPalette(img, 5); // Get top 5 colors
+                  const majorityColor = palette[0]; // Most dominant one
+                  const adjustedColor = adjustForPremiumContrast(majorityColor);
+                  const textColor = getContrastTextColor(adjustedColor);
 
-              divArt.style.backgroundColor = `rgb(${adjustedColor.join(',')})`;
-              divArt.style.color = textColor;
+                  divArt.style.backgroundColor = `rgb(${adjustedColor.join(',')})`;
+                  divArt.style.color = textColor;
 
-              // Apply text color inside contents
-              divArt.querySelectorAll('.contents, a, p, h2, strong').forEach(el => {
-                el.style.color = textColor;
+                  // Apply text color inside contents
+                  divArt.querySelectorAll('.contents, a, p, h2, strong').forEach(el => {
+                    el.style.color = textColor;
+                  });
+                } catch (e) {
+                  console.warn("Color extraction failed:", e);
+                }
               });
-            } catch (e) {
-              console.warn("Color extraction failed:", e);
             }
           });
+
+          if (data.length === 0) loading.innerText = "No more articles.";
+          else loading.style.display = 'none';
+          offset += 3;
         }
-      });
 
-      if (data.length === 0) loading.innerText = "No more articles.";
-      else loading.style.display = 'none';
-      offset += 3;
-    }
+        // Infinite scroll
+        window.addEventListener('scroll', () => {
+          const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+          if (nearBottom && loading.style.display === 'none') {
+            loadArticles();
+          }
+        });
 
-    // Infinite scroll
-    window.addEventListener('scroll', () => {
-      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
-      if (nearBottom && loading.style.display === 'none') {
         loadArticles();
-      }
-    });
-
-    loadArticles();
-  });
-</script>
+      });
+    </script>
 
 
-  <footer>
-<p>News data powered by The New York Times, The Guardian and NewsAPI. All content belongs to their respective publishers</p>
-    <p>&copy; 2025 news.sumitdev.com</p>
-  </footer>
+    <footer>
+      <p>News data powered by The New York Times, The Guardian and NewsAPI. All content belongs to their respective
+        publishers</p>
+      <p>&copy; 2025 news.sumitdev.com</p>
+    </footer>
+  </main>
 </body>
+
 </html>
