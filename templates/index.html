@@ -29,17 +29,19 @@
     <div class="contents tabs">
       <div class="tabs-nav button-container" role="tablist" aria-label="Content sections">
         <div class="tabs-indicator"></div>
-        <button class="glass-btn tab-button" role="tab" aria-selected="true" aria-controls="panel-1"
+        <button class="glass-btn tab-button" role="tab" aria-selected="true" aria-controls="articles"
           id="tab-1">News</button>
         <button class="glass-btn tab-button" role="tab" aria-selected="false" aria-controls="panel-2"
-          id="tab-2">Movies</button>  
+          id="tab-2">Movies</button>
 
       </div>
-      <div class="tab-panel" id="articles" role="tabpanel" id="panel-1" aria-labelledby="tab-1" aria-hidden="false">
+      <!-- panel-1 -->
+      <div class="tab-panel" id="articles" role="tabpanel" aria-labelledby="tab-1" aria-hidden="false">
         <h1>Latest News</h1>
       </div>
-      <div class="tab-panel" id="articlesM" role="tabpanel" id="panel-2" aria-labelledby="tab-2" aria-hidden="true">
-        <h1>Latest Movies/h1>
+      <!-- panel-2 -->
+      <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" aria-hidden="true">
+        <h1>Latest Movies</h1>
       </div>
       <div class="loading" id="loading">Loading...</div>
     </div>
@@ -184,11 +186,11 @@
 
 
       // for tabs
-      document.addEventListener('DOMContentLoaded', () => {
-        const tabList = document.querySelector('.tabs-nav');
-        const tabs = tabList.querySelectorAll('.tab-button');
-        const panels = document.querySelectorAll('.tab-panel');
-        const indicator = document.querySelector('.tabs-indicator');
+      document.addEventListener("DOMContentLoaded", () => {
+        const tabList = document.querySelector(".tabs-nav");
+        const tabs = tabList.querySelectorAll(".tab-button");
+        const panels = document.querySelectorAll(".tab-panel");
+        const indicator = document.querySelector(".tabs-indicator");
 
         const setIndicatorPosition = (tab) => {
           indicator.style.transform = `translateX(${tab.offsetLeft}px)`;
@@ -199,25 +201,25 @@
         setIndicatorPosition(tabs[0]);
 
         tabs.forEach((tab) => {
-          tab.addEventListener('click', (e) => {
+          tab.addEventListener("click", (e) => {
             const targetTab = e.target;
             const targetPanel = document.querySelector(
-              `#${targetTab.getAttribute('aria-controls')}`
+              `#${targetTab.getAttribute("aria-controls")}`
             );
 
             // Update tabs
             tabs.forEach((tab) => {
-              tab.setAttribute('aria-selected', false);
-              tab.classList.remove('active');
+              tab.setAttribute("aria-selected", false);
+              tab.classList.remove("active");
             });
-            targetTab.setAttribute('aria-selected', true);
-            targetTab.classList.add('active');
+            targetTab.setAttribute("aria-selected", true);
+            targetTab.classList.add("active");
 
             // Update panels
             panels.forEach((panel) => {
-              panel.setAttribute('aria-hidden', true);
+              panel.setAttribute("aria-hidden", true);
             });
-            targetPanel.setAttribute('aria-hidden', false);
+            targetPanel.setAttribute("aria-hidden", false);
 
             // Move indicator
             setIndicatorPosition(targetTab);
@@ -225,21 +227,22 @@
         });
 
         // Keyboard navigation
-        tabList.addEventListener('keydown', (e) => {
+        tabList.addEventListener("keydown", (e) => {
           const targetTab = e.target;
           const previousTab = targetTab.previousElementSibling;
           const nextTab = targetTab.nextElementSibling;
 
-          if (e.key === 'ArrowLeft' && previousTab) {
+          if (e.key === "ArrowLeft" && previousTab) {
             previousTab.click();
             previousTab.focus();
           }
-          if (e.key === 'ArrowRight' && nextTab) {
+          if (e.key === "ArrowRight" && nextTab) {
             nextTab.click();
             nextTab.focus();
           }
         });
       });
+
     </script>
 
 
