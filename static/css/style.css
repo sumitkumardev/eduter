@@ -116,3 +116,115 @@ svg {
 .right {
     display: flex;
 }
+
+
+/* 02/06/2025 */
+/* Tabs Container */
+.tabs {
+  width: 100%;
+  max-width: 600px;
+  margin: 2rem;
+}
+
+/* Tabs Navigation */
+.tabs-nav {
+  position: relative;
+  display: flex;
+  gap: var(--tabs-gap);
+  background: var(--highlight-color);
+  padding: var(--tabs-nav-padding);
+  border-radius: var(--tab-border-radius);
+  margin-bottom: 2rem;
+  isolation: isolate; /* Create new stacking context */
+}
+
+/* Tab Buttons */
+/* .tab-button {
+  flex: 1;
+  all: unset;
+  position: relative;
+  padding: var(--tab-padding);
+  font-size: var(--tab-font-size);
+  font-weight: var(--tab-font-weight);
+  color: var(--text-color);
+  border-radius: var(--tab-border-radius);
+  cursor: pointer;
+  transition: color var(--transition-duration) var(--transition-timing);
+  text-align: center;
+  white-space: nowrap;
+  z-index: 1;
+} */
+
+.tab-button:hover {
+  color: var(--primary-color);
+}
+
+.tab-button[aria-selected="true"] {
+  color: var(--primary-color);
+}
+
+/* Moving Indicator */
+.tabs-indicator {
+  position: absolute;
+  top: var(--tabs-nav-padding);
+  bottom: var(--tabs-nav-padding);
+  left: 0;
+  border-radius: calc(var(--tab-border-radius) - 2px);
+  background: var(--highlight-color);
+  transition: 
+    transform var(--transition-duration) var(--transition-timing),
+    width var(--transition-duration) var(--transition-timing);
+  pointer-events: none;
+  z-index: 0;
+  box-shadow: 
+    0 0 0 1px var(--border-color),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+  will-change: transform, width;
+}
+
+/* Tab Panels */
+.tab-panel {
+  padding: 2rem;
+  background: transparent;
+  border-radius: var(--tab-border-radius);
+  display: none;
+  transform-origin: top;
+  animation: slideIn var(--transition-duration) var(--transition-timing);
+  box-shadow: 
+    0 0 0 1px var(--border-color),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tab-panel[aria-hidden="false"] {
+  display: block;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Focus styles */
+.tab-button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Content styling */
+.tab-panel h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.tab-panel p {
+  line-height: 1.6;
+  opacity: 0.9;
+}
