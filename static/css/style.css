@@ -69,7 +69,7 @@ a {
     padding: 0 15px;
     border-radius: 28px;
     align-items: center;
-    background-color: #edededb8;
+    /* background-color: #edededb8; */
 }
 
 header {
@@ -99,10 +99,10 @@ p {
 }
 
 
-.headMain {
+/* .headMain {
     backdrop-filter: blur(12px) brightness(125%) contrast(110%) grayscale(0%) hue-rotate(0deg) invert(0%) opacity(100%) saturate(100%) sepia(0%);
     -webkit-backdrop-filter: blur(12px) brightness(125%) contrast(110%) grayscale(0%) hue-rotate(0deg) invert(0%) opacity(100%) saturate(100%) sepia(0%);
-}
+} */
 
 button.glass-btn {
     color: inherit;
