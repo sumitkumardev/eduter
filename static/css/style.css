@@ -118,6 +118,7 @@ svg {
     width: 24px;
     height: 24px;
     fill: #141414;
+    display: block;
 }
 
 .right {
@@ -185,7 +186,7 @@ svg {
 
 /* Tab Panels */
 .tab-panel {
-    padding: 15px;
+    padding: 10px;
     border-radius: var(--tab-border-radius);
     display: none;
     transform-origin: top;

@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <h2><a href="https://www.themoviedb.org/${movie.media_type || 'movie'}/${movie.id}" target="_blank">${movie.name || movie.title}</a></h2>
           <p class="article-summary">${movie.overview || 'No description available.'}</p>
           <div class="meta">
-            <p><strong>⭐ ${movie.vote_average} (${movie.vote_count} votes)</strong></p>
+            <p><strong><img class="svg" src="static/images/rating.svg" alt="rating"> ${movie.vote_average} (${movie.vote_count} votes)</strong></p>
             <p class="sml">${new Date(movie.first_air_date || movie.release_date || '').toLocaleDateString('en-GB', {
               day: '2-digit',
               month: 'short',
