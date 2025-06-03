@@ -42,7 +42,7 @@ def get_articles():
 def get_movies():
     try:
         offset = int(request.args.get('offset', 0))
-        limit = int(request.args.get('limit', 10))
+        limit = int(request.args.get('limit', 3))
         resources = list(collectionM.find({}, {"_id": 0}).sort("created_date", -1)[offset:offset+limit])
         return jsonify(resources)
     except Exception as e:
