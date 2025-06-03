@@ -10,7 +10,8 @@ MONGO_URI = os.getenv("MONGO_URI")
 # Connect to MongoDB
 client = MongoClient(MONGO_URI)
 db = client["newsque"]
-collection = db["newsque_resource"]
+collectionN = db["newsque_resource"]
+collectionM = db["trending_IN"]
 
 @app.route('/')
 def index():
@@ -21,16 +22,36 @@ def index():
 # /v1/headlines
 # /v1/bulletins
 # /v1/stories
+
+# /v1/new feeds
 @app.route('/v1/newsfeed')
 def get_articles():
     try:
         offset = int(request.args.get('offset', 0))
         limit = int(request.args.get('limit', 3))
-        resources = list(collection.find({}, {"_id": 0}).sort("created_date", -1)[offset:offset+limit])
+        resources = list(collectionN.find({}, {"_id": 0}).sort("created_date", -1)[offset:offset+limit])
         return jsonify(resources)
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+
+
+# /v1/movie feed
+
+@app.route('/v1/moviefeed')
+def get_movies():
+    try:
+        offset = int(request.args.get('offset', 0))
+        limit = int(request.args.get('limit', 10))
+        resources = list(collectionM.find({}, {"_id": 0}).sort("created_date", -1)[offset:offset+limit])
+        return jsonify(resources)
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
