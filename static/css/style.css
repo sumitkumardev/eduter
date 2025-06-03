@@ -120,7 +120,16 @@ svg {
     fill: #141414;
     display: block;
 }
+img.svg {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    vertical-align: top;
+}
 
+.meta {
+    padding-block: 10px;
+}
 .right {
     display: flex;
 }
