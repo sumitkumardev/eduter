@@ -66,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="meta">
                         <p><strong>${article.byline}</strong></p>
                         <p class="sml">${new Date(article.created_date).toLocaleDateString('en-GB', {
-                            day: '2-digit', month: 'short', year: 'numeric'
-                        })}</p>
+                day: '2-digit', month: 'short', year: 'numeric'
+            })}</p>
                     </div>
                 </div>
             `;
@@ -102,8 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="meta">
                         <p><strong>⭐ ${movie.vote_average} (${movie.vote_count} votes)</strong></p>
                         <p class="sml">${new Date(movie.first_air_date || movie.release_date || '').toLocaleDateString('en-GB', {
-                            day: '2-digit', month: 'short', year: 'numeric'
-                        })}</p>
+                day: '2-digit', month: 'short', year: 'numeric'
+            })}</p>
                     </div>
                 </div>
             `;
@@ -118,19 +118,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('scroll', () => {
         const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+        console.log("Scroll Event - near bottom?", nearBottom);
 
         if (nearBottom && loading.style.display === 'none') {
             loading.style.display = 'block';
 
             if (isAriaVisible(articlesContainer)) {
+                console.log(">> Fetching Articles");
                 loadArticles().finally(() => loading.style.display = 'none');
             } else if (isAriaVisible(moviesContainer)) {
+                console.log(">> Fetching Movies");
                 loadMovies().finally(() => loading.style.display = 'none');
-            } else {
-                loading.style.display = 'none';
             }
         }
     });
+
 
     // Initial load based on visible tab
     if (isAriaVisible(articlesContainer)) {
