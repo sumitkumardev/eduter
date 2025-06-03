@@ -1,302 +1,223 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// INFINITE SCROLL (articles + movies) with one shared #loading
-// ─────────────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-    const colorThief = new ColorThief();
-    let offsetArticles = 0;
-    let offsetMovies = 0;
+  const colorThief = new ColorThief();
+  let offsetArticles = 0;
+  let offsetMovies = 0;
 
-    const articlesContainer = document.getElementById('articles');
-    const moviesContainer = document.getElementById('movies');
-    const loading = document.getElementById('loading');
+  const articlesContainer = document.getElementById('articles');
+  const moviesContainer = document.getElementById('movies');
+  const loading = document.getElementById('loading');
 
-    // ── UTILITY: “Is this panel visible?” based on aria-hidden="false"
-    function isAriaVisible(element) {
-        return element.getAttribute('aria-hidden') === 'false';
-    }
+  // Utility: Check luminance to decide white or black text
+  function getContrastTextColor([r, g, b]) {
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    return luminance > 186 ? 'black' : 'white';
+  }
 
-    // ── UTILITY: Decide black vs. white text for an [r,g,b] color
-    function getContrastTextColor([r, g, b]) {
-        const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-        return luminance > 186 ? 'black' : 'white';
-    }
+  function adjustForPremiumContrast([r, g, b]) {
+    const boost = 0.9;
+    return [
+      Math.max(0, Math.round(r * boost)),
+      Math.max(0, Math.round(g * boost)),
+      Math.max(0, Math.round(b * boost)),
+    ];
+  }
 
-    // ── UTILITY: Slightly darken dominant color so text stands out
-    function adjustForPremiumContrast([r, g, b]) {
-        const boost = 0.9;
-        return [
-            Math.max(0, Math.round(r * boost)),
-            Math.max(0, Math.round(g * boost)),
-            Math.max(0, Math.round(b * boost))
-        ];
-    }
+  function applyColorTheme(img, container) {
+    img.addEventListener('load', () => {
+      try {
+        const palette = colorThief.getPalette(img, 5);
+        const majorityColor = palette[0];
+        const adjustedColor = adjustForPremiumContrast(majorityColor);
+        const textColor = getContrastTextColor(adjustedColor);
 
-    // ── UTILITY: After <img> loads, grab its dominant palette & theme the container
-    function applyColorTheme(imgEl, containerEl) {
-        imgEl.addEventListener('load', () => {
-            try {
-                const palette = colorThief.getPalette(imgEl, 5);
-                const majorityColor = palette[0];
-                const adjustedColor = adjustForPremiumContrast(majorityColor);
-                const textColor = getContrastTextColor(adjustedColor);
+        container.style.backgroundColor = `rgb(${adjustedColor.join(',')})`;
+        container.style.color = textColor;
 
-                containerEl.style.backgroundColor = `rgb(${adjustedColor.join(',')})`;
-                containerEl.style.color = textColor;
-
-                containerEl
-                    .querySelectorAll('.contents, a, p, h2, strong')
-                    .forEach(el => el.style.color = textColor);
-            } catch (e) {
-                console.warn("Color extraction failed:", e);
-            }
+        container.querySelectorAll('.contents, a, p, h2, strong').forEach(el => {
+          el.style.color = textColor;
         });
+      } catch (e) {
+        console.warn('Color extraction failed:', e);
+      }
+    });
+  }
+
+  async function loadArticles() {
+    loading.style.display = 'block';
+    loading.innerText = 'Loading...';
+
+    const response = await fetch(`/v1/newsfeed?offset=${offsetArticles}&limit=3`);
+    const data = await response.json();
+
+    if (data.length === 0) {
+      loading.innerText = 'No more articles.';
+      loading.style.display = 'block';
+      return;
     }
 
-    // ── LOAD ARTICLES ──────────────────────────────────────────────────────────
-    async function loadArticles() {
-        loading.style.display = 'block';
-        const resp = await fetch(`/v1/newsfeed?offset=${offsetArticles}&limit=3`);
-        const data = await resp.json();
+    data.forEach(article => {
+      const div = document.createElement('div');
+      div.className = 'article';
 
-        // If the API returns an empty array, show “No more articles.” and stop
-        if (!data.length) {
-            loading.innerText = "No more articles.";
-            return;
-        }
+      let imgHTML = '';
+      if (article.multimedia?.[0]?.url) {
+        imgHTML = `<div class="thumb"><img crossorigin="anonymous" src="${article.multimedia[0].url}" alt="${article.title}"></div>`;
+      }
 
-        data.forEach(article => {
-            const divArt = document.createElement('div');
-            divArt.className = 'article';
+      div.innerHTML = `
+        ${imgHTML}
+        <div class="contents">
+          <h2><a href="${article.url}" target="_blank">${article.title}</a></h2>
+          <p class="article-summary">${article.abstract}</p>
+          <div class="meta">
+            <p><strong>${article.byline}</strong></p>
+            <p class="sml">${new Date(article.created_date).toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            })}</p>
+          </div>
+        </div>
+      `;
 
-            let imgHTML = '';
-            if (article.multimedia?.[0]?.url) {
-                imgHTML = `
-                    <div class="thumb">
-                      <img crossorigin="anonymous"
-                           src="${article.multimedia[0].url}"
-                           alt="${article.title}">
-                    </div>`;
-            }
+      articlesContainer.appendChild(div);
 
-            divArt.innerHTML = `
-              ${imgHTML}
-              <div class="contents">
-                <h2>
-                  <a href="${article.url}" target="_blank">
-                    ${article.title}
-                  </a>
-                </h2>
-                <p class="article-summary">${article.abstract}</p>
-                <div class="meta">
-                  <p><strong>${article.byline}</strong></p>
-                  <p class="sml">
-                    ${new Date(article.created_date).toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            })}
-                  </p>
-                </div>
-              </div>`;
-
-            // Append below the existing <h2> in #articles
-            articlesContainer.appendChild(divArt);
-
-            // Once the thumbnail loads, apply ColorThief theming
-            const imgEl = divArt.querySelector('img');
-            if (imgEl) {
-                applyColorTheme(imgEl, divArt);
-            }
-        });
-
-        offsetArticles += 3;
-        loading.style.display = 'none';
-    }
-
-    // ── LOAD MOVIES ────────────────────────────────────────────────────────────
-    async function loadMovies() {
-        loading.style.display = 'block';
-        const resp = await fetch(`/v1/moviesfeed?offset=${offsetMovies}&limit=3`);
-        const data = await resp.json();
-
-        // If empty, show “No more movies.” and stop
-        if (!data.length) {
-            loading.innerText = "No more movies.";
-            return;
-        }
-
-        data.forEach(movie => {
-            const divMv = document.createElement('div');
-            divMv.className = 'article'; // re-use same CSS class for styling
-
-            let imgHTML = '';
-            if (movie.poster_path) {
-                const imgUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
-                imgHTML = `
-                    <div class="thumb">
-                      <img crossorigin="anonymous"
-                           src="${imgUrl}"
-                           alt="${movie.name || movie.title}">
-                    </div>`;
-            }
-
-            divMv.innerHTML = `
-              ${imgHTML}
-              <div class="contents">
-                <h2>
-                  <a href="https://www.themoviedb.org/${movie.media_type}/${movie.id}"
-                     target="_blank">
-                    ${movie.name || movie.title}
-                  </a>
-                </h2>
-                <p class="article-summary">
-                  ${movie.overview || 'No description available.'}
-                </p>
-                <div class="meta">
-                  <p>
-                    <strong>⭐ ${movie.vote_average} (${movie.vote_count} votes)</strong>
-                  </p>
-                  <p class="sml">
-                    ${new Date(movie.first_air_date || movie.release_date || '').toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            })}
-                  </p>
-                </div>
-              </div>`;
-
-            // Append below the existing <h2> in #movies
-            moviesContainer.appendChild(divMv);
-
-            // Once the poster loads, apply ColorThief theming
-            const imgEl = divMv.querySelector('img');
-            if (imgEl) {
-                applyColorTheme(imgEl, divMv);
-            }
-        });
-
-        offsetMovies += 3;
-        loading.style.display = 'none';
-    }
-
-    // ── SCROLL HANDLER ─────────────────────────────────────────────────────────
-    window.addEventListener('scroll', () => {
-        const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 100);
-
-        // Only proceed if user is near bottom and #loading is currently hidden
-        if (!nearBottom || loading.style.display !== 'none') {
-            return;
-        }
-
-        // If “News” panel is visible, load more articles; else if “Movies” panel is visible, load more movies
-        if (isAriaVisible(articlesContainer)) {
-            loadArticles();
-        } else if (isAriaVisible(moviesContainer)) {
-            loadMovies();
-        }
+      const img = div.querySelector('img');
+      if (img) applyColorTheme(img, div);
     });
 
-    // ── INITIAL LOAD (when page first opens) ─────────────────────────────────
-    if (isAriaVisible(articlesContainer)) {
+    offsetArticles += 3;
+    loading.style.display = 'none';
+  }
+
+  async function loadMovies() {
+    loading.style.display = 'block';
+    loading.innerText = 'Loading...';
+
+    const response = await fetch(`/v1/moviesfeed?offset=${offsetMovies}&limit=3`);
+    const data = await response.json();
+
+    if (data.length === 0) {
+      loading.innerText = 'No more movies.';
+      loading.style.display = 'block';
+      return;
+    }
+
+    data.forEach(movie => {
+      const div = document.createElement('div');
+      div.className = 'article';
+
+      let imgHTML = '';
+      if (movie.poster_path) {
+        const imgUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+        imgHTML = `<div class="thumb"><img crossorigin="anonymous" src="${imgUrl}" alt="${movie.name || movie.title}"></div>`;
+      }
+
+      div.innerHTML = `
+        ${imgHTML}
+        <div class="contents">
+          <h2><a href="https://www.themoviedb.org/${movie.media_type || 'movie'}/${movie.id}" target="_blank">${movie.name || movie.title}</a></h2>
+          <p class="article-summary">${movie.overview || 'No description available.'}</p>
+          <div class="meta">
+            <p><strong>⭐ ${movie.vote_average} (${movie.vote_count} votes)</strong></p>
+            <p class="sml">${new Date(movie.first_air_date || movie.release_date || '').toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            })}</p>
+          </div>
+        </div>
+      `;
+
+      moviesContainer.appendChild(div);
+
+      const img = div.querySelector('img');
+      if (img) applyColorTheme(img, div);
+    });
+
+    offsetMovies += 3;
+    loading.style.display = 'none';
+  }
+
+  // Check which panel is visible using aria-hidden attribute
+  function isVisible(panel) {
+    return panel.getAttribute('aria-hidden') === 'false';
+  }
+
+  // Reset offsets and clear container when switching tabs
+  function resetAndLoad(panel) {
+    loading.innerText = 'Loading...';
+    loading.style.display = 'none';
+
+    if (panel === articlesContainer) {
+      offsetArticles = 0;
+      articlesContainer.innerHTML = '<h2>Latest News</h2>';
+      loadArticles();
+    } else if (panel === moviesContainer) {
+      offsetMovies = 0;
+      moviesContainer.innerHTML = '<h2>Latest Movies</h2>';
+      loadMovies();
+    }
+  }
+
+  // Infinite scroll
+  window.addEventListener('scroll', () => {
+    const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+
+    if (nearBottom && loading.style.display === 'none') {
+      if (isVisible(articlesContainer)) {
         loadArticles();
-    } else if (isAriaVisible(moviesContainer)) {
+      } else if (isVisible(moviesContainer)) {
         loadMovies();
+      }
     }
-});
+  });
 
+  // Tabs code
+  const tabList = document.querySelector('.tabs-nav');
+  const tabs = tabList.querySelectorAll('.tab-button');
+  const panels = document.querySelectorAll('.tab-panel');
+  const indicator = document.querySelector('.tabs-indicator');
 
+  const setIndicatorPosition = tab => {
+    indicator.style.transform = `translateX(${tab.offsetLeft}px)`;
+    indicator.style.width = `${tab.offsetWidth}px`;
+  };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TAB SWITCHING LOGIC (exactly as your existing snippet)
-// ─────────────────────────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
-    const tabList = document.querySelector(".tabs-nav");
-    const tabs = tabList.querySelectorAll(".tab-button");
-    const panels = document.querySelectorAll(".tab-panel");
-    const indicator = document.querySelector(".tabs-indicator");
+  setIndicatorPosition(tabs[0]);
 
-    const setIndicatorPosition = (tab) => {
-        indicator.style.transform = `translateX(${tab.offsetLeft}px)`;
-        indicator.style.width = `${tab.offsetWidth}px`;
-    };
+  tabs.forEach(tab => {
+    tab.addEventListener('click', e => {
+      const targetTab = e.target;
+      const targetPanel = document.querySelector(`#${targetTab.getAttribute('aria-controls')}`);
 
-    // Set initial indicator under the first (News) tab
-    setIndicatorPosition(tabs[0]);
+      // Update tabs
+      tabs.forEach(t => {
+        t.setAttribute('aria-selected', 'false');
+        t.classList.remove('active');
+      });
+      targetTab.setAttribute('aria-selected', 'true');
+      targetTab.classList.add('active');
 
-    tabs.forEach((tab) => {
-        tab.addEventListener("click", (e) => {
-            const targetTab = e.target;
-            const targetPanel = document.querySelector(
-                `#${targetTab.getAttribute("aria-controls")}`
-            );
+      // Update panels
+      panels.forEach(panel => panel.setAttribute('aria-hidden', 'true'));
+      targetPanel.setAttribute('aria-hidden', 'false');
 
-            // Deselect all tabs
-            tabs.forEach((t) => {
-                t.setAttribute("aria-selected", "false");
-                t.classList.remove("active");
-            });
-            // Select the clicked tab
-            targetTab.setAttribute("aria-selected", "true");
-            targetTab.classList.add("active");
+      setIndicatorPosition(targetTab);
 
-            // Hide all panels
-            panels.forEach((panel) => {
-                panel.setAttribute("aria-hidden", "true");
-            });
-            // Show the one the user clicked
-            targetPanel.setAttribute("aria-hidden", "false");
+      // Reset loading text and hide loader
+      loading.innerText = 'Loading...';
+      loading.style.display = 'none';
 
-            // Move the indicator under the active tab
-            setIndicatorPosition(targetTab);
-
-            // ======= NEW CODE STARTS HERE =======
-            // Reset loading message and hide it initially
-            loading.innerText = "Loading...";
-            loading.style.display = "none";
-
-            // Try to load content for the newly selected panel immediately
-            if (targetPanel === articlesContainer) {
-                // Only trigger load if loading is not already visible (avoid duplicate)
-                if (loading.style.display === "none") {
-                    loadArticles();
-                }
-            } else if (targetPanel === moviesContainer) {
-                if (loading.style.display === "none") {
-                    loadMovies();
-                }
-            }
-            // ======= NEW CODE ENDS HERE =======
-        });
+      // Reset offsets and load content for the active panel
+      resetAndLoad(targetPanel);
     });
+  });
 
-    // Keyboard navigation for left/right arrows
-    tabList.addEventListener("keydown", (e) => {
-        const targetTab = e.target;
-        const previousTab = targetTab.previousElementSibling;
-        const nextTab = targetTab.nextElementSibling;
-
-        if (e.key === "ArrowLeft" && previousTab) {
-            previousTab.click();
-            previousTab.focus();
-        }
-        if (e.key === "ArrowRight" && nextTab) {
-            nextTab.click();
-            nextTab.focus();
-        }
-    });
-});
-
-
-
-// ─────────────────────────────────────────────────────────────────────────────
-// NAV TOGGLE LOGIC (your existing snippet, unchanged)
-// ─────────────────────────────────────────────────────────────────────────────
-const navlist = document.querySelector("#nav");
-const headMain = document.querySelector(".navi");
-const hiddenElems = document.querySelectorAll(".hidden");
-
-navlist.addEventListener("click", () => {
-    headMain.classList.toggle('activenv');
-    hiddenElems.forEach(el => el.classList.toggle('active'));
+  // Initial load depending on which panel is visible
+  if (isVisible(articlesContainer)) {
+    resetAndLoad(articlesContainer);
+  } else if (isVisible(moviesContainer)) {
+    resetAndLoad(moviesContainer);
+  }
 });
