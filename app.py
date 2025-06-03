@@ -75,7 +75,7 @@ def get_movies():
         limit = int(request.args.get('limit', 3))
         resources = list(
             collectionM.find({}, {"_id": 0})
-            .sort("created_date", -1)
+            .sort("_id", -1)
             .skip(offset)
             .limit(limit)
         )
