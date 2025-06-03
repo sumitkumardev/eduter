@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let offsetMovies = 0;
 
     const articlesContainer = document.getElementById('articles');
-    const moviesContainer   = document.getElementById('movies');
-    const loading           = document.getElementById('loading');
+    const moviesContainer = document.getElementById('movies');
+    const loading = document.getElementById('loading');
 
     // ── UTILITY: “Is this panel visible?” based on aria-hidden="false"
     function isAriaVisible(element) {
@@ -91,10 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
                   <p><strong>${article.byline}</strong></p>
                   <p class="sml">
                     ${new Date(article.created_date).toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric'
-                    })}
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            })}
                   </p>
                 </div>
               </div>`;
@@ -158,10 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
                   </p>
                   <p class="sml">
                     ${new Date(movie.first_air_date || movie.release_date || '').toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric'
-                    })}
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            })}
                   </p>
                 </div>
               </div>`;
@@ -211,9 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // TAB SWITCHING LOGIC (exactly as your existing snippet)
 // ─────────────────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
-    const tabList   = document.querySelector(".tabs-nav");
-    const tabs      = tabList.querySelectorAll(".tab-button");
-    const panels    = document.querySelectorAll(".tab-panel");
+    const tabList = document.querySelector(".tabs-nav");
+    const tabs = tabList.querySelectorAll(".tab-button");
+    const panels = document.querySelectorAll(".tab-panel");
     const indicator = document.querySelector(".tabs-indicator");
 
     const setIndicatorPosition = (tab) => {
@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     tabs.forEach((tab) => {
         tab.addEventListener("click", (e) => {
-            const targetTab   = e.target;
+            const targetTab = e.target;
             const targetPanel = document.querySelector(
                 `#${targetTab.getAttribute("aria-controls")}`
             );
@@ -250,26 +250,31 @@ document.addEventListener("DOMContentLoaded", () => {
             // Move the indicator under the active tab
             setIndicatorPosition(targetTab);
 
-            // (Optional) If you want to clear out old content on tab switch,
-            // uncomment the lines below:
-            //
-            // if (targetPanel === document.getElementById('articles')) {
-            //   articlesContainer.innerHTML = '<h2>Latest News</h2>';
-            //   offsetArticles = 0;
-            //   loadArticles();
-            // } else {
-            //   moviesContainer.innerHTML = '<h2>Latest Movies</h2>';
-            //   offsetMovies = 0;
-            //   loadMovies();
-            // }
+            // ======= NEW CODE STARTS HERE =======
+            // Reset loading message and hide it initially
+            loading.innerText = "Loading...";
+            loading.style.display = "none";
+
+            // Try to load content for the newly selected panel immediately
+            if (targetPanel === articlesContainer) {
+                // Only trigger load if loading is not already visible (avoid duplicate)
+                if (loading.style.display === "none") {
+                    loadArticles();
+                }
+            } else if (targetPanel === moviesContainer) {
+                if (loading.style.display === "none") {
+                    loadMovies();
+                }
+            }
+            // ======= NEW CODE ENDS HERE =======
         });
     });
 
     // Keyboard navigation for left/right arrows
     tabList.addEventListener("keydown", (e) => {
-        const targetTab   = e.target;
+        const targetTab = e.target;
         const previousTab = targetTab.previousElementSibling;
-        const nextTab     = targetTab.nextElementSibling;
+        const nextTab = targetTab.nextElementSibling;
 
         if (e.key === "ArrowLeft" && previousTab) {
             previousTab.click();
@@ -287,8 +292,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // ─────────────────────────────────────────────────────────────────────────────
 // NAV TOGGLE LOGIC (your existing snippet, unchanged)
 // ─────────────────────────────────────────────────────────────────────────────
-const navlist     = document.querySelector("#nav");
-const headMain    = document.querySelector(".navi");
+const navlist = document.querySelector("#nav");
+const headMain = document.querySelector(".navi");
 const hiddenElems = document.querySelectorAll(".hidden");
 
 navlist.addEventListener("click", () => {
