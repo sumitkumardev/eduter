@@ -38,7 +38,7 @@ def get_articles():
 
 # /v1/movie feed
 
-@app.route('/v1/moviefeed')
+@app.route('/v1/moviesfeed')
 def get_movies():
     try:
         offset = int(request.args.get('offset', 0))
