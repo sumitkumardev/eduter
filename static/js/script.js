@@ -1,15 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const colorThief = new ColorThief();
-    let offset = 0;
+    let offsetArticles = 0;
+    let offsetMovies = 0;
+
     const articlesContainer = document.getElementById('articles');
+    const moviesContainer = document.getElementById('movies');
     const loading = document.getElementById('loading');
 
-    // Utility: Check luminance to decide white or black text
-    function getContrastTextColor([r, g, b]) {
-        const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
-        return luminance > 186 ? 'black' : 'white'; // Rule of thumb
+    function isAriaVisible(element) {
+        return element.getAttribute('aria-hidden') === 'false';
     }
 
+    function getContrastTextColor([r, g, b]) {
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+        return luminance > 186 ? 'black' : 'white';
+    }
 
     function adjustForPremiumContrast([r, g, b]) {
         const boost = 0.9;
@@ -20,75 +25,121 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
     }
 
+    function applyColorTheme(img, container) {
+        img.addEventListener('load', () => {
+            try {
+                const palette = colorThief.getPalette(img, 5);
+                const majorityColor = palette[0];
+                const adjustedColor = adjustForPremiumContrast(majorityColor);
+                const textColor = getContrastTextColor(adjustedColor);
+
+                container.style.backgroundColor = `rgb(${adjustedColor.join(',')})`;
+                container.style.color = textColor;
+
+                container.querySelectorAll('.contents, a, p, h2, strong').forEach(el => {
+                    el.style.color = textColor;
+                });
+            } catch (e) {
+                console.warn("Color extraction failed:", e);
+            }
+        });
+    }
+
     async function loadArticles() {
-        loading.style.display = 'block';
-        const response = await fetch(`/v1/newsfeed?offset=${offset}&limit=3`);
+        const response = await fetch(`/v1/newsfeed?offset=${offsetArticles}&limit=3`);
         const data = await response.json();
 
         data.forEach(article => {
-            const divArt = document.createElement('div');
-            divArt.className = 'article';
+            const div = document.createElement('div');
+            div.className = 'article';
 
             let imgHTML = '';
             if (article.multimedia?.[0]?.url) {
                 imgHTML = `<div class="thumb"><img crossorigin="anonymous" src="${article.multimedia[0].url}" alt="${article.title}"></div>`;
             }
 
-            divArt.innerHTML = `
-          ${imgHTML}
-          <div class="contents">
-            <h2><a href="${article.url}">${article.title}</a></h2>
-            <p class="article-summary">${article.abstract}</p>
-          <div class="meta"><p><strong>${article.byline}</strong></p>
-            <p class="sml">${new Date(article.created_date).toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            })}</p></div>
+            div.innerHTML = `
+                ${imgHTML}
+                <div class="contents">
+                    <h2><a href="${article.url}">${article.title}</a></h2>
+                    <p class="article-summary">${article.abstract}</p>
+                    <div class="meta">
+                        <p><strong>${article.byline}</strong></p>
+                        <p class="sml">${new Date(article.created_date).toLocaleDateString('en-GB', {
+                            day: '2-digit', month: 'short', year: 'numeric'
+                        })}</p>
+                    </div>
+                </div>
+            `;
+            articlesContainer.appendChild(div);
 
-          </div>
-        `;
-
-            articlesContainer.appendChild(divArt);
-
-            const img = divArt.querySelector('img');
-            if (img) {
-                img.addEventListener('load', () => {
-                    try {
-                        const palette = colorThief.getPalette(img, 5); // Get top 5 colors
-                        const majorityColor = palette[0]; // Most dominant one
-                        const adjustedColor = adjustForPremiumContrast(majorityColor);
-                        const textColor = getContrastTextColor(adjustedColor);
-
-                        divArt.style.backgroundColor = `rgb(${adjustedColor.join(',')})`;
-                        divArt.style.color = textColor;
-
-                        // Apply text color inside contents
-                        divArt.querySelectorAll('.contents, a, p, h2, strong').forEach(el => {
-                            el.style.color = textColor;
-                        });
-                    } catch (e) {
-                        console.warn("Color extraction failed:", e);
-                    }
-                });
-            }
+            const img = div.querySelector('img');
+            if (img) applyColorTheme(img, div);
         });
 
-        if (data.length === 0) loading.innerText = "No more articles.";
-        else loading.style.display = 'none';
-        offset += 3;
+        offsetArticles += 3;
     }
 
-    // Infinite scroll
+    async function loadMovies() {
+        const response = await fetch(`/v1/moviesfeed?offset=${offsetMovies}&limit=3`);
+        const data = await response.json();
+
+        data.forEach(movie => {
+            const div = document.createElement('div');
+            div.className = 'article';
+
+            let imgHTML = '';
+            if (movie.poster_path) {
+                const imgUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+                imgHTML = `<div class="thumb"><img crossorigin="anonymous" src="${imgUrl}" alt="${movie.name || movie.title}"></div>`;
+            }
+
+            div.innerHTML = `
+                ${imgHTML}
+                <div class="contents">
+                    <h2><a href="https://www.themoviedb.org/${movie.media_type}/${movie.id}" target="_blank">${movie.name || movie.title}</a></h2>
+                    <p class="article-summary">${movie.overview || 'No description available.'}</p>
+                    <div class="meta">
+                        <p><strong>⭐ ${movie.vote_average} (${movie.vote_count} votes)</strong></p>
+                        <p class="sml">${new Date(movie.first_air_date || movie.release_date || '').toLocaleDateString('en-GB', {
+                            day: '2-digit', month: 'short', year: 'numeric'
+                        })}</p>
+                    </div>
+                </div>
+            `;
+            moviesContainer.appendChild(div);
+
+            const img = div.querySelector('img');
+            if (img) applyColorTheme(img, div);
+        });
+
+        offsetMovies += 3;
+    }
+
     window.addEventListener('scroll', () => {
         const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+
         if (nearBottom && loading.style.display === 'none') {
-            loadArticles();
+            loading.style.display = 'block';
+
+            if (isAriaVisible(articlesContainer)) {
+                loadArticles().finally(() => loading.style.display = 'none');
+            } else if (isAriaVisible(moviesContainer)) {
+                loadMovies().finally(() => loading.style.display = 'none');
+            } else {
+                loading.style.display = 'none';
+            }
         }
     });
 
-    loadArticles();
+    // Initial load based on visible tab
+    if (isAriaVisible(articlesContainer)) {
+        loadArticles();
+    } else if (isAriaVisible(moviesContainer)) {
+        loadMovies();
+    }
 });
+
 
 
 // for tabs
