@@ -24,12 +24,29 @@ def index():
 # /v1/stories
 
 # /v1/new feeds
+# @app.route('/v1/newsfeed')
+# def get_articles():
+#     try:
+#         offset = int(request.args.get('offset', 0))
+#         limit = int(request.args.get('limit', 3))
+#         resources = list(collectionN.find({}, {"_id": 0}).sort("created_date", -1)[offset:offset+limit])
+#         return jsonify(resources)
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         return jsonify({"error": "Internal Server Error"}), 500
+
+# v2 news feed
 @app.route('/v1/newsfeed')
 def get_articles():
     try:
         offset = int(request.args.get('offset', 0))
         limit = int(request.args.get('limit', 3))
-        resources = list(collectionN.find({}, {"_id": 0}).sort("created_date", -1)[offset:offset+limit])
+        resources = list(
+            collectionN.find({}, {"_id": 0})
+            .sort("created_date", -1)
+            .skip(offset)
+            .limit(limit)
+        )
         return jsonify(resources)
     except Exception as e:
         print(f"Error: {e}")
@@ -38,18 +55,34 @@ def get_articles():
 
 # /v1/movie feed
 
+# @app.route('/v1/moviesfeed')
+# def get_movies():
+#     try:
+#         offset = int(request.args.get('offset', 0))
+#         limit = int(request.args.get('limit', 3))
+#         resources = list(collectionM.find({}, {"_id": 0}).sort("created_date", -1)[offset:offset+limit])
+#         return jsonify(resources)
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         return jsonify({"error": "Internal Server Error"}), 500
+
+# v2 movies feed
+
 @app.route('/v1/moviesfeed')
 def get_movies():
     try:
         offset = int(request.args.get('offset', 0))
         limit = int(request.args.get('limit', 3))
-        resources = list(collectionM.find({}, {"_id": 0}).sort("created_date", -1)[offset:offset+limit])
+        resources = list(
+            collectionM.find({}, {"_id": 0})
+            .sort("created_date", -1)
+            .skip(offset)
+            .limit(limit)
+        )
         return jsonify(resources)
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
-
 
 
 
