@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 container.style.backgroundColor = `rgb(${adjustedColor.join(',')})`;
                 container.style.color = textColor;
 
-                container.querySelectorAll('.contents, a, p, h2, strong').forEach(el => {
+                container.querySelectorAll('.contents, a, p, h2, strong, button').forEach(el => {
                     el.style.color = textColor;
                 });
             } catch (e) {
@@ -243,8 +243,46 @@ navlist.addEventListener("click", () => {
 });
 
 // paragraph limit to 4 and click function
+// function toggleText(btn) {
+//   const paragraph = btn.previousElementSibling;
+//   paragraph.classList.toggle("expanded");
+//   btn.textContent = paragraph.classList.contains("expanded") ? "Read less" : "Read more";
+// }
+
+// new 
 function toggleText(btn) {
   const paragraph = btn.previousElementSibling;
   paragraph.classList.toggle("expanded");
-  btn.textContent = paragraph.classList.contains("expanded") ? "Read less" : "Read more";
+  btn.textContent = paragraph.classList.contains("expanded") ? "More" : "Less";
 }
+
+function hideButtonsForShortParagraphs() {
+  const paragraphs = document.querySelectorAll('.article-summary');
+  paragraphs.forEach(paragraph => {
+    const button = paragraph.nextElementSibling;
+
+    // Clone and measure full height without clamp
+    const clone = paragraph.cloneNode(true);
+    clone.style.webkitLineClamp = 'unset';
+    clone.style.display = 'block';
+    clone.style.position = 'absolute';
+    clone.style.visibility = 'hidden';
+    clone.style.height = 'auto';
+    clone.style.maxHeight = 'none';
+    clone.style.overflow = 'visible';
+    document.body.appendChild(clone);
+
+    const actualHeight = clone.offsetHeight;
+    const lineHeight = parseFloat(getComputedStyle(paragraph).lineHeight);
+    const clampHeight = lineHeight * 4;
+
+    // Remove the clone
+    document.body.removeChild(clone);
+
+    if (actualHeight <= clampHeight + 1) {
+      button.style.display = 'none'; // Hide button if <= 4 lines
+    }
+  });
+}
+container.innerHTML += renderedHTML;
+hideButtonsForShortParagraphs();
