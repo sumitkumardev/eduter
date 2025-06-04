@@ -226,8 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
 const navlist = document.querySelector("#nav");
 const headMain = document.querySelector(".navi");
 const hiddenElems = document.querySelectorAll(".hidden");
+const spone = document.querySelector("#spone");
+const sptwo = document.querySelector("#sptwo");
 
 navlist.addEventListener("click", () => {
     headMain.classList.toggle('activenv');
+    spone.classList.toggle('togglespone');
+    sptwo.classList.toggle('togglesptwo');
     hiddenElems.forEach(el => el.classList.toggle('active'));
 });

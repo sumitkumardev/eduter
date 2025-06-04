@@ -120,6 +120,7 @@ svg {
     fill: #141414;
     display: block;
 }
+
 img.svg {
     width: 24px;
     height: 24px;
@@ -130,6 +131,7 @@ img.svg {
 .meta {
     padding-block: 10px;
 }
+
 .right {
     display: flex;
 }
@@ -246,17 +248,21 @@ nav.navi {
     border-radius: 28px;
     height: 50px;
     transition: .3s ease;
-    backdrop-filter: blur(12px) brightness(125%) contrast(110%) grayscale(0%) hue-rotate(0deg) invert(0%) opacity(100%) saturate(100%) sepia(0%);
+    backdrop-filter: blur(24px) brightness(125%) contrast(110%) grayscale(0%) hue-rotate(0deg) invert(0%) opacity(100%) saturate(100%) sepia(0%);
     -webkit-backdrop-filter: blur(12px) brightness(125%) contrast(110%) grayscale(0%) hue-rotate(0deg) invert(0%) opacity(100%) saturate(100%) sepia(0%);
     background-color: #edededb8;
     overflow: hidden;
 }
 
 nav.activenv {
-    height: 30vh;
+    height: 14rem;
 }
-
-
+.togglespone{
+transform: translateY(-5px) rotate(45deg);
+}
+.togglesptwo{
+transform: translateY(7px) rotate(-45deg);
+}
 
 .hidden {
     opacity: 0;
@@ -264,7 +270,7 @@ nav.activenv {
 }
 
 .nav ul {
-    padding: 20px 10px;
+    padding: 10px;
 }
 
 ul li {
@@ -281,4 +287,11 @@ li.navitem {
     opacity: 1;
     visibility: visible;
     transform: translateY(0) !important;
+}
+
+/* hamburger */
+#nav svg path {
+    transform-origin: 50% 50%;
+    transform-box: fill-box;
+    transition: .3s ease;
 }
