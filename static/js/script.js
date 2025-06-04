@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <h2><a href="${article.url}" target="_blank">${article.title}</a></h2>
           <div class="paragraph-container">
           <p class="article-summary">${article.abstract}</p>
-          <button class="toggle-btn" onclick="toggleText(this)">Read more</button>
+          <button class="toggle-btn" onclick="toggleText(this)">More</button>
           </div>
           <div class="meta">
             <p><strong>${article.byline}</strong></p>
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <h2><a href="https://www.themoviedb.org/${movie.media_type || 'movie'}/${movie.id}" target="_blank">${movie.name || movie.title}</a></h2>
         <div class="paragraph-container">
           <p class="article-summary">${movie.overview || 'No description available.'}</p>
-          <button class="toggle-btn" onclick="toggleText(this)">Read more</button>
+          <button class="toggle-btn" onclick="toggleText(this)">More</button>
           </div>
           <div class="meta">
             <p><strong><img class="svg" src="static/images/rating.svg" alt="rating"> ${movie.vote_average} (${movie.vote_count} votes)</strong></p>
@@ -253,7 +253,7 @@ navlist.addEventListener("click", () => {
 function toggleText(btn) {
   const paragraph = btn.previousElementSibling;
   paragraph.classList.toggle("expanded");
-  btn.textContent = paragraph.classList.contains("expanded") ? "More" : "Less";
+  btn.textContent = paragraph.classList.contains("expanded") ? "Less" : "More";
 }
 
 function hideButtonsForShortParagraphs() {
@@ -284,5 +284,5 @@ function hideButtonsForShortParagraphs() {
     }
   });
 }
-container.innerHTML += renderedHTML;
+articlesContainer.innerHTML += renderedHTML;
 hideButtonsForShortParagraphs();
