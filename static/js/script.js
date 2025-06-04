@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ${imgHTML}
         <div class="contents">
           <h2><a href="${article.url}" target="_blank">${article.title}</a></h2>
-          <div class=".paragraph-container">
+          <div class="paragraph-container">
           <p class="article-summary">${article.abstract}</p>
           <button class="toggle-btn" onclick="toggleText(this)">Read more</button>
           </div>
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ${imgHTML}
         <div class="contents">
           <h2><a href="https://www.themoviedb.org/${movie.media_type || 'movie'}/${movie.id}" target="_blank">${movie.name || movie.title}</a></h2>
-        <div class=".paragraph-container">
+        <div class="paragraph-container">
           <p class="article-summary">${movie.overview || 'No description available.'}</p>
           <button class="toggle-btn" onclick="toggleText(this)">Read more</button>
           </div>
@@ -244,7 +244,7 @@ navlist.addEventListener("click", () => {
 
 // paragraph limit to 4 and click function
 function toggleText(btn) {
-    const paragraph = document.getElementById("myParagraph");
-    paragraph.classList.toggle("expanded");
-    btn.textContent = paragraph.classList.contains("expanded") ? "Read less" : "Read more";
+  const paragraph = btn.previousElementSibling;
+  paragraph.classList.toggle("expanded");
+  btn.textContent = paragraph.classList.contains("expanded") ? "Read less" : "Read more";
 }
