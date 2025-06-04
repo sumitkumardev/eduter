@@ -68,7 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ${imgHTML}
         <div class="contents">
           <h2><a href="${article.url}" target="_blank">${article.title}</a></h2>
+          <div class=".paragraph-container">
           <p class="article-summary">${article.abstract}</p>
+          <button class="toggle-btn" onclick="toggleText(this)">Read more</button>
+          </div>
           <div class="meta">
             <p><strong>${article.byline}</strong></p>
             <p class="sml">${new Date(article.created_date).toLocaleDateString('en-GB', {
@@ -117,7 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ${imgHTML}
         <div class="contents">
           <h2><a href="https://www.themoviedb.org/${movie.media_type || 'movie'}/${movie.id}" target="_blank">${movie.name || movie.title}</a></h2>
+        <div class=".paragraph-container">
           <p class="article-summary">${movie.overview || 'No description available.'}</p>
+          <button class="toggle-btn" onclick="toggleText(this)">Read more</button>
+          </div>
           <div class="meta">
             <p><strong><img class="svg" src="static/images/rating.svg" alt="rating"> ${movie.vote_average} (${movie.vote_count} votes)</strong></p>
             <p class="sml">${new Date(movie.first_air_date || movie.release_date || '').toLocaleDateString('en-GB', {
@@ -235,3 +241,10 @@ navlist.addEventListener("click", () => {
     sptwo.classList.toggle('togglesptwo');
     hiddenElems.forEach(el => el.classList.toggle('active'));
 });
+
+// paragraph limit to 4 and click function
+function toggleText(btn) {
+    const paragraph = document.getElementById("myParagraph");
+    paragraph.classList.toggle("expanded");
+    btn.textContent = paragraph.classList.contains("expanded") ? "Read less" : "Read more";
+}

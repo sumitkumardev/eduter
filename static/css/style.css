@@ -257,11 +257,13 @@ nav.navi {
 nav.activenv {
     height: 14rem;
 }
-.togglespone{
-transform: translateY(-5px) rotate(45deg);
+
+.togglespone {
+    transform: translateY(-5px) rotate(45deg);
 }
-.togglesptwo{
-transform: translateY(7px) rotate(-45deg);
+
+.togglesptwo {
+    transform: translateY(7px) rotate(-45deg);
 }
 
 .hidden {
@@ -294,4 +296,34 @@ li.navitem {
     transform-origin: 50% 50%;
     transform-box: fill-box;
     transition: .3s ease;
+}
+
+/* para limit to 4 */
+.paragraph-container {
+    position: relative;
+    max-width: 600px;
+}
+
+.text {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    /* Limit to 4 lines */
+    -webkit-box-orient: vertical;
+    transition: all 0.3s ease;
+}
+
+.text.expanded {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+}
+
+.toggle-btn {
+    margin-top: 5px;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    padding: 0;
+    font-size: 14px;
 }
