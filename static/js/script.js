@@ -89,6 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (img) applyColorTheme(img, div);
         });
 
+        hideButtonsForShortParagraphs();
+
+
         offsetArticles += 3;
         loading.style.display = 'none';
     }
@@ -140,6 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = div.querySelector('img');
             if (img) applyColorTheme(img, div);
         });
+
+        hideButtonsForShortParagraphs();
+
 
         offsetMovies += 3;
         loading.style.display = 'none';
@@ -251,38 +257,36 @@ navlist.addEventListener("click", () => {
 
 // new 
 function toggleText(btn) {
-  const paragraph = btn.previousElementSibling;
-  paragraph.classList.toggle("expanded");
-  btn.textContent = paragraph.classList.contains("expanded") ? "Less" : "More";
+    const paragraph = btn.previousElementSibling;
+    paragraph.classList.toggle("expanded");
+    btn.textContent = paragraph.classList.contains("expanded") ? "Less" : "More";
 }
 
 function hideButtonsForShortParagraphs() {
-  const paragraphs = document.querySelectorAll('.article-summary');
-  paragraphs.forEach(paragraph => {
-    const button = paragraph.nextElementSibling;
+    const paragraphs = document.querySelectorAll('.article-summary');
+    paragraphs.forEach(paragraph => {
+        const button = paragraph.nextElementSibling;
 
-    // Clone and measure full height without clamp
-    const clone = paragraph.cloneNode(true);
-    clone.style.webkitLineClamp = 'unset';
-    clone.style.display = 'block';
-    clone.style.position = 'absolute';
-    clone.style.visibility = 'hidden';
-    clone.style.height = 'auto';
-    clone.style.maxHeight = 'none';
-    clone.style.overflow = 'visible';
-    document.body.appendChild(clone);
+        // Clone and measure full height without clamp
+        const clone = paragraph.cloneNode(true);
+        clone.style.webkitLineClamp = 'unset';
+        clone.style.display = 'block';
+        clone.style.position = 'absolute';
+        clone.style.visibility = 'hidden';
+        clone.style.height = 'auto';
+        clone.style.maxHeight = 'none';
+        clone.style.overflow = 'visible';
+        document.body.appendChild(clone);
 
-    const actualHeight = clone.offsetHeight;
-    const lineHeight = parseFloat(getComputedStyle(paragraph).lineHeight);
-    const clampHeight = lineHeight * 4;
+        const actualHeight = clone.offsetHeight;
+        const lineHeight = parseFloat(getComputedStyle(paragraph).lineHeight);
+        const clampHeight = lineHeight * 4;
 
-    // Remove the clone
-    document.body.removeChild(clone);
+        // Remove the clone
+        document.body.removeChild(clone);
 
-    if (actualHeight <= clampHeight + 1) {
-      button.style.display = 'none'; // Hide button if <= 4 lines
-    }
-  });
+        if (actualHeight <= clampHeight + 1) {
+            button.style.display = 'none'; // Hide button if <= 4 lines
+        }
+    });
 }
-articlesContainer.innerHTML += renderedHTML;
-hideButtonsForShortParagraphs();
