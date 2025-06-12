@@ -142,7 +142,6 @@ def get_movies():
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
-# 👇 This is necessary for Vercel to invoke Flask
 def handler(request, context):
     return app(request.environ, lambda status, headers: (status, headers))
  
