@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" id="Star">
+  <g id="Page-1" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
+    <g id="Dribbble-Light-Preview" fill="#efbf04" transform="translate(-99 -320)" class="color000000 svgShape">
+      <g id="icons" transform="translate(56 160)" fill="#efbf04" class="color000000 svgShape">
+        <path id="star_favorite-[#1499]" d="M60.556 172.206a1.877 1.877 0 0 0-.547 1.669l.678 3.916c.21 1.219-.766 2.209-1.874 2.209-.292 0-.593-.069-.885-.221l-3.544-1.849a1.918 1.918 0 0 0-1.769 0l-3.544 1.849a1.907 1.907 0 0 1-.885.221c-1.107 0-2.084-.99-1.873-2.209l.677-3.916a1.877 1.877 0 0 0-.547-1.669l-2.867-2.773c-1.128-1.091-.505-2.992 1.053-3.217l3.963-.571a1.897 1.897 0 0 0 1.43-1.032l1.773-3.562A1.88 1.88 0 0 1 53.5 160c.679 0 1.357.35 1.706 1.051l1.772 3.562c.276.557.812.943 1.431 1.032l3.963.571c1.558.225 2.18 2.126 1.053 3.217l-2.868 2.773z" fill="#efbf04" class="color000000 svgShape"></path>
+      </g>
+    </g>
+  </g>
+</svg>

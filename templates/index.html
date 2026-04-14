@@ -1,0 +1,88 @@
+<!-- HTML + JS Frontend (templates/index.html) -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="NewsQue — Latest news and trending movies, swipe through stories.">
+  <title>NewsQue — News Feed</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+  <main>
+    <header>
+      <nav class="navi">
+        <div class="headMain">
+          <div class="left">
+            <h1>NewsQue</h1>
+          </div>
+          <div class="right">
+            <div id="nav">
+              <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+                <path id="spone" d="M4 18L20 18" stroke="#000000" stroke-width="2" stroke-linecap="round"></path>
+                <path id="sptwo" d="M4 6L20 6" stroke="#000000" stroke-width="2" stroke-linecap="round"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="nav" aria-hidden="true">
+
+          <ul>
+            <li class="navitem hidden"><a>Home</a></li>
+
+            <li class="navitem hidden"><a>Trending</a></li>
+
+            <li class="navitem hidden"><a>Upcoming</a></li>
+
+            <li class="navitem hidden"><a>About</a></li>
+
+          </ul>
+
+
+        </div>
+      </nav>
+    </header>
+    <div class="tabs">
+      <div class="tabs-nav button-container" role="tablist" aria-label="Content sections">
+        <div class="tabs-indicator"></div>
+        <button class="glass-btn tab-button" role="tab" aria-selected="true" aria-controls="articles"
+          id="tab-1">News</button>
+        <button class="glass-btn tab-button" role="tab" aria-selected="false" aria-controls="movies"
+          id="tab-2">Movies</button>
+
+      </div>
+      <!-- panel-1: News carousel -->
+      <div class="tab-panel" id="articles" role="tabpanel" aria-labelledby="tab-1" aria-hidden="false">
+        <div class="carousel-container" id="carousel-news">
+          <div class="carousel-track" id="track-news">
+            <!-- slides injected by JS -->
+          </div>
+          <div class="carousel-loader" id="loader-news">Loading...</div>
+        </div>
+      </div>
+      <!-- panel-2: Movies carousel -->
+      <div class="tab-panel" id="movies" role="tabpanel" aria-labelledby="tab-2" aria-hidden="true">
+        <div class="carousel-container" id="carousel-movies">
+          <div class="carousel-track" id="track-movies">
+            <!-- slides injected by JS -->
+          </div>
+          <div class="carousel-loader" id="loader-movies">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.6.0/color-thief.min.js"></script>
+
+    <script src="/static/js/script.js"></script>
+
+    <footer>
+      <p>News sourced from trusted RSS feeds. Content belongs to respective publishers.</p>
+      <p>&copy; 2026 news.sumitdev.com</p>
+    </footer>
+  </main>
+</body>
+
+</html>

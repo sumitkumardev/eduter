@@ -1,0 +1,498 @@
+* {
+    margin: 0;
+    border: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 10px;
+    overflow: hidden;
+    height: 100vh;
+}
+
+h2 {
+    font-family: "Times New Roman", Times, serif;
+}
+
+ul {
+    list-style: none;
+}
+
+strong {
+    font-style: italic;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+p {
+    font-family: 'Lato', sans-serif;
+    color: inherit;
+    line-height: 1.5;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Header & Navigation
+   ════════════════════════════════════════════════════════════ */
+
+header {
+    position: sticky;
+    top: 10px;
+    width: 100%;
+    z-index: 10;
+    color: #141414;
+}
+
+.headMain {
+    display: flex;
+    height: 50px;
+    justify-content: space-between;
+    padding: 0 15px;
+    border-radius: 28px;
+    align-items: center;
+}
+
+h1 {
+    font-size: 1.5rem;
+    color: inherit;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.right {
+    display: flex;
+}
+
+nav.navi {
+    border-radius: 28px;
+    height: 50px;
+    transition: .3s ease;
+    backdrop-filter: blur(24px) brightness(125%) contrast(110%);
+    -webkit-backdrop-filter: blur(12px) brightness(125%) contrast(110%);
+    background-color: #edededb8;
+    overflow: hidden;
+}
+
+nav.activenv {
+    height: 14rem;
+}
+
+.nav ul {
+    padding: 10px;
+}
+
+ul li {
+    transition: all .3s ease;
+}
+
+li.navitem {
+    padding: 10px;
+    font-weight: 600;
+    transform: translateY(-10px);
+}
+
+.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) !important;
+}
+
+/* hamburger */
+#nav svg path {
+    transform-origin: 50% 50%;
+    transform-box: fill-box;
+    transition: .3s ease;
+}
+
+.togglespone {
+    transform: translateY(-5px) rotate(45deg);
+}
+
+.togglesptwo {
+    transform: translateY(7px) rotate(-45deg);
+}
+
+svg {
+    width: 24px;
+    height: 24px;
+    fill: #141414;
+    display: block;
+}
+
+img.svg {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Main layout
+   ════════════════════════════════════════════════════════════ */
+
+main {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Tabs
+   ════════════════════════════════════════════════════════════ */
+
+.tabs {
+    width: 100%;
+    max-width: 600px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 10px;
+}
+
+.tabs-nav {
+    position: relative;
+    display: flex;
+    gap: 15px;
+    margin-bottom: 0.75rem;
+    isolation: isolate;
+    flex-shrink: 0;
+}
+
+button.glass-btn {
+    color: inherit;
+    padding: 4px 15px;
+    border: 1px solid rgba(20, 20, 20, 0.5);
+    border-radius: 28px;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    color: #000;
+}
+
+.tab-button[aria-selected="true"] {
+    color: #fefefe;
+    transition: color 0.4s ease;
+}
+
+/* Moving Indicator */
+.tabs-indicator {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 28px;
+    background: #25282f;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: -1;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.1);
+    will-change: transform, width;
+}
+
+/* Tab Panels */
+.tab-panel {
+    display: none;
+    flex: 1;
+    min-height: 0;
+}
+
+.tab-panel[aria-hidden="false"] {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Focus styles */
+.tab-button:focus-visible {
+    outline: 2px solid #25282f;
+    outline-offset: 2px;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Carousel — Vertical swipe with dynamic slide heights
+   ════════════════════════════════════════════════════════════ */
+
+.carousel-container {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    border-radius: 1rem;
+    touch-action: none;
+    outline: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.carousel-track {
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+}
+
+/* ── Slide — dynamic height, snaps to container ──────────── */
+.carousel-slide {
+    width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: #f5f5f5;
+    border-radius: 1rem;
+    overflow: hidden;
+    position: relative;
+    /* height is set by JS to match container */
+}
+
+/* ── Slide image ─────────────────────────────────────────── */
+.slide-image {
+    width: 100%;
+    flex: 0 0 auto;
+    overflow: hidden;
+}
+
+/* Mobile: image takes up to 40% of slide */
+.slide-image img {
+    width: 100%;
+    max-height: 40vh;
+    object-fit: cover;
+    display: block;
+}
+
+/* ── Slide content area ──────────────────────────────────── */
+.slide-content {
+    flex: 1 1 auto;
+    padding: 14px 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(21, 25, 31, 0));
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.slide-content::-webkit-scrollbar {
+    display: none;
+}
+
+.slide-content h2 {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 2rem;
+    line-height: 1.3;
+}
+
+.slide-content a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.slide-meta {
+    margin-top: auto;
+    padding-top: 6px;
+}
+
+.slide-meta p {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.85rem;
+}
+
+.sml {
+    opacity: 0.7;
+    font-size: 0.8rem;
+}
+
+/* ── Carousel loader ─────────────────────────────────────── */
+.carousel-loader {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 12px;
+    font-style: italic;
+    color: gray;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(6px);
+    display: none;
+    z-index: 5;
+}
+
+/* ── Article summary — clamp to 3 lines on mobile ────────── */
+.article-summary {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.expanded {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+}
+
+.toggle-btn {
+    margin-top: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 13px;
+    opacity: .7;
+    text-decoration: underline;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Footer
+   ════════════════════════════════════════════════════════════ */
+
+footer {
+    flex-shrink: 0;
+    width: 100%;
+    height: 60px;
+}
+
+footer p {
+    padding: 5px;
+    font-size: 0.75rem;
+    text-align: center;
+    opacity: 0.6;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Responsive — Tablet (≥600px)
+   ════════════════════════════════════════════════════════════ */
+
+@media (min-width: 600px) {
+    body {
+        padding: 15px;
+    }
+
+    .tabs {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .slide-image img {
+        max-height: 45vh;
+    }
+
+    .slide-content {
+        padding: 18px 16px;
+        gap: 10px;
+    }
+
+    .slide-content h2 {
+        font-size: 1.4rem;
+    }
+
+    .article-summary {
+        -webkit-line-clamp: 4;
+        font-size: 0.95rem;
+    }
+
+    .slide-meta p {
+        font-size: 0.9rem;
+    }
+}
+
+/* ════════════════════════════════════════════════════════════
+   Responsive — Desktop (≥900px)
+   ════════════════════════════════════════════════════════════ */
+
+@media (min-width: 900px) {
+    body {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    main {
+        max-width: 800px;
+    }
+
+    .tabs {
+        max-width: 800px;
+    }
+
+    /* Side-by-side layout for slides on wide screens */
+    .carousel-slide {
+        flex-direction: row;
+    }
+
+    .slide-image {
+        flex: 0 0 45%;
+        max-width: 45%;
+    }
+
+    .slide-image img {
+        max-height: none;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .slide-content {
+        flex: 1 1 55%;
+        padding: 24px 20px;
+        gap: 12px;
+    }
+
+    .slide-content h2 {
+        font-size: 1.5rem;
+        line-height: 1.35;
+    }
+
+    .article-summary {
+        -webkit-line-clamp: 5;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .slide-meta p {
+        font-size: 0.95rem;
+    }
+
+    .carousel-slide {
+        border-radius: 1.25rem;
+    }
+}
+
+/* ════════════════════════════════════════════════════════════
+   Responsive — Large Desktop (≥1200px)
+   ════════════════════════════════════════════════════════════ */
+
+@media (min-width: 1200px) {
+    main {
+        max-width: 960px;
+    }
+
+    .tabs {
+        max-width: 960px;
+    }
+
+    .slide-content {
+        padding: 28px 24px;
+    }
+
+    .article-summary {
+        -webkit-line-clamp: 6;
+        font-size: 1.05rem;
+    }
+}
