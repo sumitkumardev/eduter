@@ -42,13 +42,14 @@ def get_articles():
     try:
         offset = int(request.args.get('offset', 0))
         limit = int(request.args.get('limit', 3))
+        query_filter = {"published_at": {"$exists": True, "$ne": None}}
         resources = list(
-            collectionN.find({}, {"_id": 0})
+            collectionN.find(query_filter, {"_id": 0})
             .sort("published_at", -1)
             .skip(offset)
             .limit(limit)
         )
-        total = collectionN.count_documents({})
+        total = collectionN.count_documents(query_filter)
         has_more = (offset + limit) < total
         resp = make_response(jsonify({"articles": resources, "has_more": has_more}))
         resp.headers['Cache-Control'] = 'public, max-age=60'
@@ -78,13 +79,14 @@ def get_movies():
     try:
         offset = int(request.args.get('offset', 0))
         limit = int(request.args.get('limit', 3))
+        query_filter = {"release_date": {"$exists": True, "$ne": None}}
         resources = list(
-            collectionM.find({}, {"_id": 0})
+            collectionM.find(query_filter, {"_id": 0})
             .sort("release_date", -1)
             .skip(offset)
             .limit(limit)
         )
-        total = collectionM.count_documents({})
+        total = collectionM.count_documents(query_filter)
         has_more = (offset + limit) < total
         resp = make_response(jsonify({"movies": resources, "has_more": has_more}))
         resp.headers['Cache-Control'] = 'public, max-age=60'

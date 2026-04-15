@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="toggle-btn" onclick="toggleText(this)">More</button>
                 </div>
                 <div class="slide-meta">
-                    <p><strong><img class="svg" src="static/images/rating.svg" alt="rating"> ${movie.vote_average ?? ''} (${movie.vote_count ?? 0} votes)</strong></p>
+                    <p><strong><img class="svg" src="/static/images/rating.svg" alt="rating"> ${movie.vote_average ?? ''} (${movie.vote_count ?? 0} votes)</strong></p>
                     <p class="sml">${dateStr}</p>
                 </div>
             </div>
@@ -466,25 +466,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (visiblePanelId && carouselMap[visiblePanelId]) {
         carouselMap[visiblePanelId].init();
     }
+
+    // ── Navigation toggle (moved inside DOMContentLoaded) ───
+    const navlist = document.querySelector("#nav");
+    const headMain = document.querySelector(".navi");
+    const hiddenElems = document.querySelectorAll(".hidden");
+    const spone = document.querySelector("#spone");
+    const sptwo = document.querySelector("#sptwo");
+
+    if (navlist) {
+        navlist.addEventListener("click", () => {
+            headMain.classList.toggle('activenv');
+            spone.classList.toggle('togglespone');
+            sptwo.classList.toggle('togglesptwo');
+            hiddenElems.forEach(el => el.classList.toggle('active'));
+        });
+    }
 });
 
 // ══════════════════════════════════════════════════════════
 //  Global functions (must be outside DOMContentLoaded)
 // ══════════════════════════════════════════════════════════
-
-// navigation
-const navlist = document.querySelector("#nav");
-const headMain = document.querySelector(".navi");
-const hiddenElems = document.querySelectorAll(".hidden");
-const spone = document.querySelector("#spone");
-const sptwo = document.querySelector("#sptwo");
-
-navlist.addEventListener("click", () => {
-    headMain.classList.toggle('activenv');
-    spone.classList.toggle('togglespone');
-    sptwo.classList.toggle('togglesptwo');
-    hiddenElems.forEach(el => el.classList.toggle('active'));
-});
 
 // paragraph expand/collapse
 function toggleText(btn) {
