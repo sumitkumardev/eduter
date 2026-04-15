@@ -11,7 +11,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 # Connect to MongoDB
 client = MongoClient(MONGO_URI)
 db = client["newsque"]
-collectionN = db["proinput"]
+collectionN = db["proFeed"]
 collectionM = db["trending_IN"]
 
 @app.route('/')
